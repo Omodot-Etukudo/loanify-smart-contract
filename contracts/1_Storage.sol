@@ -1,29 +1,44 @@
-// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.7;
 
-pragma solidity >=0.8.2 <0.9.0;
+contract myFirstContract{
+    uint256 myNumber;
+    string name;
+    string[] names;
+    
 
-/**
- * @title Storage
- * @dev Store & retrieve value in a variable
- * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
- */
-contract Storage {
+    enum FreshJuiceSize{ SMALL, MEDIUM, LARGE }
 
-    uint256 number;
+    
+    mapping(string => uint256) public phonenumbers;
 
-    /**
-     * @dev Store value in variable
-     * @param num value to store
-     */
-    function store(uint256 num) public {
-        number = num;
+    function addNumber(int a, int b) view public returns(int){
+        int sum = a + b;
+        return sum;
     }
 
-    /**
-     * @dev Return value 
-     * @return value of 'number'
-     */
-    function retrieve() public view returns (uint256){
-        return number;
+    function changeNumber(uint256 number) public {
+        myNumber = number;
     }
+    function viewNumber() view public returns(uint256){
+        return myNumber;
+    }
+
+
+
+
+
+
+
+
+    // 
+    // 
+    // function addName(string memory name) public{
+    //     names.push(name);
+    // }
+    // function getName(uint256 index) view public returns(string memory){
+    //     return names[index];
+    // }
+    // function assignNumber(string memory name, uint256 number) public {
+    //     phonenumbers[name] = number;
+    // }
 }

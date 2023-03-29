@@ -1,0 +1,131 @@
+{
+	"compiler": {
+		"version": "0.8.19+commit.7dd6d404"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_customer",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_creditScore",
+						"type": "uint256"
+					}
+				],
+				"name": "addCustomer",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "creditScores",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "customerArray",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "customerAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "creditScore",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_customer",
+						"type": "address"
+					}
+				],
+				"name": "getCreditScore",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Loanify_New.sol": "Loanify"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Loanify_New.sol": {
+			"keccak256": "0xe6b56dfc7cfbe937c2d32a05743a396749c8cda0b1b88125926e4499743661db",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://94dec680a32f901d88b22b9423bf0843ef68b381adbbdd4e0499487d31d188d1",
+				"dweb:/ipfs/QmVdyTJcz6dMcxCKq5wM36XdssYG2eyZcym9FqmuukYxyh"
+			]
+		}
+	},
+	"version": 1
+}
