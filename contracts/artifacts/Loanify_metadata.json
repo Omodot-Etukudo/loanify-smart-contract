@@ -21,6 +21,16 @@
 						"internalType": "uint256",
 						"name": "_creditScore",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_netIncome",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_customer_balance",
+						"type": "uint256"
 					}
 				],
 				"name": "addCustomer",
@@ -36,7 +46,7 @@
 						"type": "address"
 					}
 				],
-				"name": "creditScores",
+				"name": "creditScore",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -66,6 +76,80 @@
 						"internalType": "uint256",
 						"name": "creditScore",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "customer_netIncomepm",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "customer_balance",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "customer_balance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "customer_netIncomepm",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getCreditScore",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getNetIncome",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -77,9 +161,19 @@
 						"internalType": "address",
 						"name": "_customer",
 						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "loan_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "loan_duration",
+						"type": "uint256"
 					}
 				],
-				"name": "getCreditScore",
+				"name": "requestLoan",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -87,7 +181,7 @@
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			}
 		],
@@ -119,11 +213,11 @@
 	},
 	"sources": {
 		"contracts/Loanify_New.sol": {
-			"keccak256": "0xe6b56dfc7cfbe937c2d32a05743a396749c8cda0b1b88125926e4499743661db",
+			"keccak256": "0x29648e5b97ff6f01216b9692196aef826bee44cc536cc08298ea6aab2d2d9e61",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://94dec680a32f901d88b22b9423bf0843ef68b381adbbdd4e0499487d31d188d1",
-				"dweb:/ipfs/QmVdyTJcz6dMcxCKq5wM36XdssYG2eyZcym9FqmuukYxyh"
+				"bzz-raw://ac38cea6012c761fc47d91c7102bb1cf5a2b0c4ed3cc1db6d08d5aaf89d0378d",
+				"dweb:/ipfs/QmNgsgpeBwT1zB7KJmP5Kp29xtEoDmvMCSvHGf6MQRjMyE"
 			]
 		}
 	},
