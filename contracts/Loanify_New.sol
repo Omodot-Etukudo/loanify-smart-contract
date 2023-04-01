@@ -71,11 +71,19 @@ contract Loanify{
             uint256 repaymentpm = loan_amount + interest/ loan_duration;
 
             require(net >= 5 * repaymentpm , "You're net income is too low for this loan amount. Try reducing it your loan request");
-            // sendFunds(customer_address, loan_amount);
+            
+            sendFunds(loan_amount);
 
     }
 
-    
+    function sendFunds(uint256 _loan_amount) public payable{
 
+        customer_balance[msg.sender]+= _loan_amount;
+        contract_balance-=_loan_amount;
+        uint256 new_balance = contract_balance - _loan_amount;
+
+        require(contract_balance - _loan_amount == new_balance, "Error sending funds");
+
+    }
 
 }
