@@ -183,6 +183,19 @@
 				],
 				"stateMutability": "nonpayable",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_loan_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "sendFunds",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -213,11 +226,11 @@
 	},
 	"sources": {
 		"contracts/Loanify_New.sol": {
-			"keccak256": "0x29648e5b97ff6f01216b9692196aef826bee44cc536cc08298ea6aab2d2d9e61",
+			"keccak256": "0x71d233692d282ffa047954e757c784eb6ef2989286783db13be2994842b9fe7e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ac38cea6012c761fc47d91c7102bb1cf5a2b0c4ed3cc1db6d08d5aaf89d0378d",
-				"dweb:/ipfs/QmNgsgpeBwT1zB7KJmP5Kp29xtEoDmvMCSvHGf6MQRjMyE"
+				"bzz-raw://abd719272fec7c78d19bd477b4e67e3777c678b1ed3a171ef4e646e6969788cf",
+				"dweb:/ipfs/QmZPd6DYJ4bVT4ohcN9DgiKv1y8ERzWffQtqnEEUX5Qs4r"
 			]
 		}
 	},
