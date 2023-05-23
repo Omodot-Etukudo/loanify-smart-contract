@@ -1,26 +1,21 @@
 // SPDX-License-Identifier:MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.0;
 
 contract P2PLoanify{
 
-    //INITIALIZE A CONSTRUCTOR TO SET THE CONTRACT BALANCE TO 0 ON DEPLOYMENT.
-
     uint256 contractBalance;
 
-    constructor() payable {
-        contractBalance = msg.value;
+    constructor() payable{
+        contractBalance=0;
     }
 
-    address lenderAddress;
-    mapping(address => uint256) public lenderBalance;
-
-    //INITIALIZE BORROWER STATES
+    //INITIALIZE CUSTOMER STATES
     address borrowerAddress;
     mapping(address => uint256) public borrowerCredit;
     mapping(address => uint256) public borrowerIncomePY;
     mapping(address => uint256) public borrowerBalance;
 
-    // STRUCT TO HOLD BORROWER DATA
+    // STRUCT TO HOLD CUSTOMER DATA
     struct borrowerSchema {
         address borrowerAddress;
         uint256 borrowerCredit;
@@ -30,10 +25,11 @@ contract P2PLoanify{
 
     //INITIALIZE OFFER STATES
     uint256 offerID;
-    mapping(uint256 => address) public lender;
+    mapping(uint256 => address payable ) public lender;
     mapping(uint256 => uint256) public offerAmount;
     mapping(uint256 => uint256) public offerDuration;
     mapping(uint256 => uint256) public offerRate;
+    mapping(uint256 => address) public owner;
     mapping(uint256 => bool) public isAvailable;
     mapping(uint256 => bool) public isMine;
     mapping(uint256 => bool) public isDeleted;
@@ -41,10 +37,11 @@ contract P2PLoanify{
 
     // STRUCT TO HOLD OFFER DATA
     struct offerSchema {
-        address lender;
+        address payable lender;
         uint256 offerID;
         uint256 offer_amount;
         uint256 lend_rate;
+        address owner;
         uint256 lend_duration;
         uint256 lend_repayment;
         bool isAvailable;
@@ -58,32 +55,37 @@ contract P2PLoanify{
     // CREATE AN INSTANCE OF THE OFFER SCHEMA TO HOLD THE CURRENT LOANS A USER HAS.
     offerSchema[] public myLoans;
 
-    //FUNCTION TO RETURN ALL OFFERS ENCODED
-    function get_offers() public view returns (bytes memory){
-        // require(offersArray.length > 0,"No offers");
-        return abi.encode(offersArray);
+    //FUNCTION TO RETURN ALL OFFERS
+    function get_offers() public view returns (offerSchema[] memory){
+        return offersArray;
+    }
+
+     //FUNCTION TO RETURN ALL TAKEN OFFERS
+    function get_myLoans() public view returns (offerSchema[] memory){
+        return myLoans;     
     }
 
     //FUNCTION TO CREATE AN OFFER
-    function create_offer(uint256 _offerAmount, uint256 _loanDuration, uint256 _loanRate) public payable returns(string memory){
+    function create_offer(uint256 _offerAmount, uint256 _loanDuration, uint256 _loanRate) external payable returns(string memory){
         
         require(_offerAmount > 0 && _loanDuration > 0 && _loanRate > 0, "Fill in the required fields" );
 
         //ASSIGN OFFER STATES TO PARAMETERS
         offerID++;
-        lender[offerID] = msg.sender;
+        lender[offerID] = payable (msg.sender);
         offerAmount[offerID] = _offerAmount;
         offerDuration[offerID] = _loanDuration;
         offerRate[offerID] = _loanRate;
         
         //PLACE PARAMETERS IN THE STRUCT
         offerSchema memory newOffer = offerSchema({
-            lender: msg.sender,
+            lender: payable (msg.sender),
             offerID: offerID,
             offer_amount: _offerAmount,
             lend_rate:_loanRate,
+            owner:msg.sender,
             lend_duration: _loanDuration,
-            lend_repayment:(_offerAmount*_loanDuration*_loanRate)/12*100,
+            lend_repayment: _offerAmount + (_offerAmount * (_loanRate / 100) * _loanDuration),
             isAvailable:true,
             isCancelled:false,
             isDue:false
@@ -95,12 +97,6 @@ contract P2PLoanify{
         //PUSH THE NEWLY CREATED OFFER
         offersArray.push(newOffer);
 
-        //DEPOSIT THE FUNDS ON THE CONTRACT AND HOLD
-        contractBalance = (contractBalance + (_offerAmount * 1 ether));
-
-        //DEDUCT THE FUNDS FROM LENDER'S ACCOUNT
-        uint256 newBalance = msg.sender.balance - _offerAmount;
-
         //COMPARE THE LENGTH TO THE LENGTH + 1 TO ENSURE THERE WAS A PUSH. IF NOT, RETURN AN ERROR.
         require(offersArray.length == newOfferIndex + 1, "Error creating an offer, try again");
 
@@ -108,44 +104,47 @@ contract P2PLoanify{
     }
 
     //FUNCTION TO DELETE OFFER
-    function delete_offer(uint256 offerId) public returns(uint256) {
-        require(msg.sender == offersArray[offerId].lender, "You are not the creator of this offer.");
-        bool found = false;
-        for (uint256 i = 0; i < offersArray.length; i++) {         
-            require(offersArray[i].offerID == offerId,"Does not exist");
-            found = true;
-            require(i < offersArray.length - 1,"Error");
-            delete offersArray[i];
-            offersArray[i] = offersArray[offersArray.length - 1];
-            offersArray.pop();   
-            contractBalance -= offersArray[i].offer_amount;
-            uint256 newBalance = msg.sender.balance + offersArray[i].offer_amount;       
-            return newBalance;      
-        }     
+    function delete_offer(uint256 offerId, uint256 amount, address payable giver) external payable returns(string memory) {
         
-        require(found, "Offer not found");
+        amount = offersArray[offerId].offer_amount;
+        uint256 lastOfferIndex = offersArray.length - 1;
+        require(lastOfferIndex >= 0, "No offers exist to delete");
+        require(offerId <= lastOfferIndex, "Offer does not exist in array");
+        if (offerId < lastOfferIndex) {
+            offersArray[offerId] = offersArray[lastOfferIndex];
+        }
+        offersArray.pop();
+
+        bool success = giver.send(amount*1e18);
+        if (success) {
+            //RETURN A SUCCESS MESSAGE IF EVERYTHING WORKS.
+            return "Your offer has been refunded";
+        } else {
+            //RETURN AN ERROR MESSAGE IF TRANSFER FAILS
+            return "Failed to transfer funds.";
+        }
+
     }
 
     //REMOVE OFFER FROM ALL OFFERS
-    function remove_offer(uint256 offerId) public{  
-        for (uint256 i = 0; i < offersArray.length; i++) {         
-            require(offersArray[i].offerID == offerId,"Does not exist");
-            require(i < offersArray.length - 1,"Error");
-            delete offersArray[i];
-            offersArray[i] = offersArray[offersArray.length - 1];
-            offersArray.pop();        
-            break;       
-        }     
+    function remove_offer(uint256 offerId) public payable{  
+        uint256 lastOfferIndex = offersArray.length - 1;
+        require(lastOfferIndex >= 0, "No offers exist to delete");
+        require(offerId <= lastOfferIndex, "Offer does not exist in array");
+        if (offerId < lastOfferIndex) {
+            offersArray[offerId] = offersArray[lastOfferIndex];
+        }
+        offersArray.pop();    
     }
-    function remove_my_loan(uint256 offerId) public{  
-        for (uint256 i = 0; i < myLoans.length; i++) {         
-            require(myLoans[i].offerID == offerId,"Does not exist");
-            require(i < myLoans.length - 1,"Error");
-            delete myLoans[i];
-            myLoans[i] = myLoans[myLoans.length - 1];
-            myLoans.pop();        
-            break;       
-        }     
+
+    function remove_my_loan(uint256 offerId) public payable{  
+        uint256 lastOfferIndex = myLoans.length - 1;
+        require(lastOfferIndex >= 0, "No offers exist to delete");
+        require(offerId <= lastOfferIndex, "Offer does not exist in array");
+        if (offerId < lastOfferIndex) {
+            myLoans[offerId] = myLoans[lastOfferIndex];
+        }
+        myLoans.pop();   
     }
 
     //CREATE A SCHEMA TO HOLD ALL CUSTOMERS
@@ -189,11 +188,13 @@ contract P2PLoanify{
 
     }
 
-    // FUNCTION TO APPLY FOR LOAN. PASS THE BORROWERS ADDRESS AND OFFER ID
-    function apply_for_loan(uint256 offerID) public payable returns(string memory){
+
+    function apply_for_loan(uint256 offerId, address payable borrower) public payable returns (string memory){
         
+        uint256 amount = offersArray[offerId].offer_amount;
+
         //CHECK THE PERSON TRYING TO APPLY AND RETURN ERROR IF THE CREATOR IS TRYING TO APPLY...
-        require(msg.sender != offersArray[offerID].lender, "You cannot apply for your own loan.");
+        require(msg.sender != offersArray[offerId].lender, "You cannot apply for your own loan.");
 
         //CALL FUNCTION TO CHECK CREDIT SCORE AND NET INCOME OF THE PERSON APPLYING
         uint256 myCredit = get_credit_score();
@@ -203,37 +204,48 @@ contract P2PLoanify{
         require(myCredit >= 300,"Your credit score is too low.");
         
         //CHECK IF THE PERSON'S INCOME IS MORE OR EQUAL TO 5 TIMES THE REPAYMENT.
-        require(myIncome >= 5 * offersArray[offerID].lend_repayment, "Your income level is too low for this loan.");
+        require(myIncome >= 5 * offersArray[offerId].lend_repayment, "Your income level is too low for this loan.");
         
-        //MAKE THE OFFER UNAVAILABE AS IT WILL BE ASSINGED TO THIS PERSON
-        offersArray[offerID].isAvailable = false;
+        //MAKE THE OFFER UNAVAILABLE AS IT WILL BE ASSINGED TO THIS PERSON
+        offersArray[offerId].isAvailable = false;
+
+        //SET THE OWNER TO THE CURRENT BORROWER
+        offersArray[offerId].owner = msg.sender;
 
         //ADD THE OFFER TO AN ARRAY TO HOLD ONLY LOANS THE PERSON HAS TAKEN
-        myLoans.push(offersArray[offerID]);
+        myLoans.push(offersArray[offerId]);
 
-        //REMOVE OFFER FROM ALL OFFERS ARRAY(PENDING)
-        remove_offer(offerID);
+        //REMOVE OFFER FROM ALL OFFERS ARRAY
+        remove_offer(offerId);
 
-        //CREDIT THE PERSON'S WALLET WITH THE AMOUNT OF THE LOAN
-        msg.sender.balance + offersArray[offerID].offer_amount;
-
-        // DEBIT THE CONTRACT THAT HELD THE MONEY
-        contractBalance - offersArray[offerID].offer_amount;
-
-        //RETURN A SUCCESS MESSAGE IF EVERYTHING WORKS.
-        return "Loan Approved. Funds can now be accessed in your wallet.";
+        bool success = borrower.send(amount*1e18);
+        if (success) {
+            //RETURN A SUCCESS MESSAGE IF EVERYTHING WORKS.
+            return "Loan Approved. Funds can now be accessed in your wallet.";
+        } else {
+            //RETURN AN ERROR MESSAGE IF TRANSFER FAILS
+            return "Error: Failed to transfer funds.";
+        }
 
     }
 
-    //SEND REPAYMENT TO THE CREATOR
-    function repay_loan(address payable _recipient, uint256 _amount, uint256 offerId) public payable returns(uint256){
-        
-        require(msg.sender.balance >= _amount, "Insufficient balance");
-        _recipient.transfer(_amount);
-        remove_my_loan(offerId);
-        
-        return msg.sender.balance;
+    //SEND REPAYMENT TO THE LENDER
+    function repay_loan(uint256 offerId) public payable returns(bool){
+          
+        //CHECK IF THE SENDER HAS ENOUGH ETHEREUM
+        require(msg.sender.balance >= msg.value, "Insufficient balance");
 
+        //CHECK IF THE CONTRACT HAS RECEIVED THE REPAYMENT AMOUNT
+        require(address(this).balance >= msg.value, "Insufficient funds in contract");
+
+        //TRANSFER THE REPAYMENT FROM THE CONTRACT TO THE LENDER
+        payable(myLoans[offerId].lender).transfer(msg.value);
+
+        //REMOVE LOAN FROM MY LOANS AFTER REPAYING
+        remove_my_loan(offerId);
+
+        return true;
+       
     }
 
 }

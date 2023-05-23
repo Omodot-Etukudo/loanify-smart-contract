@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.19+commit.7dd6d404"
+		"version": "0.8.0+commit.c7dfd78e"
 	},
 	"language": "Solidity",
 	"output": {
@@ -42,8 +42,13 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "offerID",
+						"name": "offerId",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "borrower",
+						"type": "address"
 					}
 				],
 				"name": "apply_for_loan",
@@ -183,17 +188,27 @@
 						"internalType": "uint256",
 						"name": "offerId",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address payable",
+						"name": "giver",
+						"type": "address"
 					}
 				],
 				"name": "delete_offer",
 				"outputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "string",
 						"name": "",
-						"type": "uint256"
+						"type": "string"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -204,6 +219,71 @@
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "get_myLoans",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address payable",
+								"name": "lender",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "offerID",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "offer_amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_rate",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "owner",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_duration",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_repayment",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "isAvailable",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "isCancelled",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "isDue",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct P2PLoanify.offerSchema[]",
+						"name": "",
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -227,9 +307,61 @@
 				"name": "get_offers",
 				"outputs": [
 					{
-						"internalType": "bytes",
+						"components": [
+							{
+								"internalType": "address payable",
+								"name": "lender",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "offerID",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "offer_amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_rate",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "owner",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_duration",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lend_repayment",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "isAvailable",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "isCancelled",
+								"type": "bool"
+							},
+							{
+								"internalType": "bool",
+								"name": "isDue",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct P2PLoanify.offerSchema[]",
 						"name": "",
-						"type": "bytes"
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -322,28 +454,9 @@
 				"name": "lender",
 				"outputs": [
 					{
-						"internalType": "address",
+						"internalType": "address payable",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "lenderBalance",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -360,7 +473,7 @@
 				"name": "myLoans",
 				"outputs": [
 					{
-						"internalType": "address",
+						"internalType": "address payable",
 						"name": "lender",
 						"type": "address"
 					},
@@ -378,6 +491,11 @@
 						"internalType": "uint256",
 						"name": "lend_rate",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
 					},
 					{
 						"internalType": "uint256",
@@ -476,7 +594,7 @@
 				"name": "offersArray",
 				"outputs": [
 					{
-						"internalType": "address",
+						"internalType": "address payable",
 						"name": "lender",
 						"type": "address"
 					},
@@ -494,6 +612,11 @@
 						"internalType": "uint256",
 						"name": "lend_rate",
 						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
 					},
 					{
 						"internalType": "uint256",
@@ -528,13 +651,32 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "offerId",
 						"type": "uint256"
 					}
 				],
 				"name": "remove_my_loan",
 				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -547,21 +689,11 @@
 				],
 				"name": "remove_offer",
 				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
 				"inputs": [
-					{
-						"internalType": "address payable",
-						"name": "_recipient",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_amount",
-						"type": "uint256"
-					},
 					{
 						"internalType": "uint256",
 						"name": "offerId",
@@ -571,9 +703,9 @@
 				"name": "repay_loan",
 				"outputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "bool",
 						"name": "",
-						"type": "uint256"
+						"type": "bool"
 					}
 				],
 				"stateMutability": "payable",
@@ -595,7 +727,7 @@
 		"compilationTarget": {
 			"contracts/P2P_Loanify.sol": "P2PLoanify"
 		},
-		"evmVersion": "paris",
+		"evmVersion": "istanbul",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -608,11 +740,11 @@
 	},
 	"sources": {
 		"contracts/P2P_Loanify.sol": {
-			"keccak256": "0x8a60b9cb69b3229f1f4de5f71ec11914069557738f239531387693e6bb250e0b",
+			"keccak256": "0xed7596ba6d8b449a48a9acc1cbc9be586f15d0610e17d656e763a0fe0e7114de",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://c7357b25d5f9ed784e412f34a27d10b9bc910fc74ed94ee834e948d2ec51b4d0",
-				"dweb:/ipfs/QmfZtihEBJhkoTn7d8Dj8oNyMArrDYtB3DwWWwHVXcNmkx"
+				"bzz-raw://508b36e90651dd38577a6f3c4ed0d1fc2ba418a9bba7aae32127343273285af9",
+				"dweb:/ipfs/QmPZaRa3yBxse5hRa3SMup6SXN4jLQbCPkkADPredUYS15"
 			]
 		}
 	},
